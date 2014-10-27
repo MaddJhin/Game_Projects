@@ -19,7 +19,6 @@ public class BarrierBehavior : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D collider){
 		if (collider.gameObject.tag == "Player")
 		{
-			Debug.Log ("Hit Player");
 			collider.gameObject.SetActive (false);
 		}
 

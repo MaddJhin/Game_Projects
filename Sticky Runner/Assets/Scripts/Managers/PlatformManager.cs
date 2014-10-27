@@ -3,87 +3,49 @@ using System.Collections.Generic;
 
 public class PlatformManager : MonoBehaviour {
 
-	public Transform platformPrefab;
+	public GameObject[] spawnPrefabs;
+	public Vector2 startPosition;
+	public Vector2 minGap, maxGap;
 	public int numberOfObjects;
 	public float recycleOffset;
-	public Vector3 startPosition;
-	public Vector3 minSize, maxSize, minGap, maxGap;
-	public float minY, maxY;
 
-	public Material[] materials;
-	public PhysicMaterial[] physicsMaterials;
-	public Booster booster;
+	public Booster2D booster;
 
-	Queue<Transform> objectQueue;
+	Queue<GameObject> objectQueue;
 	Vector3 nextPosition;
 
 	// Use this for initialization
 	void Start () {
 
-		GameEventManager.GameStart += GameStart;
-		GameEventManager.GameOver += GameOver;
-		objectQueue = new Queue<Transform>(numberOfObjects);
-
-		for (int i = 0; i < numberOfObjects; i++)
+		objectQueue = new Queue<GameObject>(numberOfObjects);
+		for (int i = 0; i < numberOfObjects; i++) 
 		{
-			objectQueue.Enqueue((Transform)Instantiate (
-				platformPrefab, new Vector3(0f, 0f, -200f), Quaternion.identity));
+			objectQueue.Enqueue(Instantiate(spawnPrefabs[Random.Range(0, spawnPrefabs.Length)]) as GameObject);
 		}
-		enabled = false;
-	}
-
-	void GameStart(){
 		nextPosition = startPosition;
-		for (int i = 0; i < numberOfObjects; i++)
+		for (int i = 0; i < numberOfObjects; i++) 
 		{
-			Recycle();
+			Recycle ();
 		}
-		enabled = true;
-	}
-
-	void GameOver(){
-		enabled = false;
 	}
 
 	void Update () {
-		if (objectQueue.Peek().localPosition.x + recycleOffset < Runner.distanceTraveled)
+		if (objectQueue.Peek().transform.localPosition.x + recycleOffset < PlatformerCharacter2D.distanceTraveled)
 		{
-			Recycle();
+			Recycle ();
 		}
 	}
 
 	void Recycle (){
-		Vector3 scale = new Vector3 (
-			Random.Range (minSize.x, maxSize.x),
-			Random.Range (minSize.y, maxSize.y),
-			Random.Range (minSize.z, maxSize.z));
 
-		Vector3 position = nextPosition;
-		position.x += scale.x * 0.5f;
-		position.y += scale.y * 0.5f;
+		Vector2 position = nextPosition;
 		booster.SpawnIfAvailable(position);
 
-		Transform o = objectQueue.Dequeue();
-		o.localScale = scale;
-		o.localPosition = position;
-		int materialIndex = Random.Range (0, materials.Length);
-		o.collider.material = physicsMaterials[materialIndex];
-		o.renderer.material = materials[materialIndex];
-		objectQueue.Enqueue (o);
+		GameObject obj = objectQueue.Dequeue();
+		obj.transform.localPosition = position;
+		objectQueue.Enqueue (obj);
 
-		nextPosition += new Vector3 (
-			Random.Range (minGap.x, maxGap.x) + scale.x,
-			Random.Range (minGap.y, maxGap.y),
-			Random.Range (minGap.z, maxGap.z));
-
-		if (nextPosition.y < minY)
-		{
-			nextPosition.y = minY + maxGap.y;
-		}
-
-		if (nextPosition.y > maxY)
-		{
-			nextPosition.y = maxY - maxGap.y;
-		}
+		nextPosition.x += obj.collider2D.bounds.size.x + Random.Range(minGap.x, maxGap.x);
+		nextPosition.y = Random.Range(minGap.y, maxGap.y);
 	}
 }

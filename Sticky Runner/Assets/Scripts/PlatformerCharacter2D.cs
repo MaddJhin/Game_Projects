@@ -5,6 +5,7 @@ public class PlatformerCharacter2D : MonoBehaviour {
 	public static float distanceTraveled;						// For determining how far the player has moved. 
 
 	bool facingRight = true;							// For determining which way the player is currently facing.
+	bool normalGravity = true;							// 
 
 	[SerializeField] float maxSpeed = 10f;				// The fastest the player can travel in the x axis.
 	[SerializeField] float jumpForce = 400f;			// Amount of force added when the player jumps.	
@@ -21,6 +22,7 @@ public class PlatformerCharacter2D : MonoBehaviour {
 	Transform ceilingCheck;								// A position marking where to check for ceilings
 	float ceilingRadius = .01f;							// Radius of the overlap circle to determine if the player can stand up
 	Animator anim;										// Reference to the player's animator component.
+	bool hitCeiling;									// Verify if the player hit a ceiling
 
 	bool doubleJump = false;							// Bool to veryfy if double jump has been used. 
 	Collider2D boxCollider;
@@ -45,6 +47,8 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
 		grounded = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsGround);
 		anim.SetBool("Ground", grounded);
+
+		hitCeiling = Physics2D.OverlapCircle(ceilingCheck.position, groundedRadius, whatIsGround);
 
 		// Set the vertical animation
 		anim.SetFloat("vSpeed", rigidbody2D.velocity.y);
@@ -104,6 +108,11 @@ public class PlatformerCharacter2D : MonoBehaviour {
 				doubleJump = true;
 			}
         }
+
+		if (hitCeiling)
+		{
+			VerticalFlip();
+		}
 	}
 
 	
@@ -115,6 +124,19 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
 		transform.localScale = theScale;
+	}
+
+	void VerticalFlip (){
+		// Switch the way the player is labelled as facing.
+		normalGravity = !normalGravity;
+		
+		// Multiply the player's y local scale by -1.
+		Vector3 theScale = transform.localScale;
+		theScale.y *= -1;
+		transform.localScale = theScale;
+		GameManager.InvertGravity ();
+		jumpForce = jumpForce * -1;
+		Debug.Log ("Switched Gravity");
 	}
 
 	public static void AddBoost() {

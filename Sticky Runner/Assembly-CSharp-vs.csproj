@@ -52,10 +52,11 @@
      <Compile Include="Assets\Sample Assets\2D\Scripts\Restarter.cs" />
      <Compile Include="Assets\Scripts\BarrierBehavior.cs" />
      <Compile Include="Assets\Scripts\Booster.cs" />
-     <Compile Include="Assets\Scripts\Boster2D.cs" />
+     <Compile Include="Assets\Scripts\Booster2D.cs" />
      <Compile Include="Assets\Scripts\Managers\CameraRunner.cs" />
      <Compile Include="Assets\Scripts\Managers\GUIManager.cs" />
      <Compile Include="Assets\Scripts\Managers\GameEventManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
      <Compile Include="Assets\Scripts\Managers\GroundManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ParticleManager.cs" />
      <Compile Include="Assets\Scripts\Managers\PlatformManager.cs" />

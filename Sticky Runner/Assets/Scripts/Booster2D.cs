@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Boster2D : MonoBehaviour {
+public class Booster2D : MonoBehaviour {
 
-	public float recycleOffset;
+	public float recycleOffset, spawnChance;
 	public Vector3 rotationVelocity;
+	public Vector2 positionOffset;
+
+	int[] offsetDirection;
 
 	// Use this for initialization
-	void Start () {
-	
+	void Awake () {
+		offsetDirection = new int[] {-1, 1};
+		gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -19,6 +23,15 @@ public class Boster2D : MonoBehaviour {
 			return;
 		}
 		transform.Rotate(rotationVelocity * Time.deltaTime);
+	}
+
+	public void SpawnIfAvailable (Vector2 position){
+		if (gameObject.activeSelf || spawnChance <= Random.Range (0, 100))
+		{
+			return;
+		}
+		gameObject.SetActive (true);
+		transform.localPosition = position + positionOffset * offsetDirection[Random.Range(0, offsetDirection.Length)];
 	}
 
 	void OnTriggerEnter2D (Collider2D collider){
