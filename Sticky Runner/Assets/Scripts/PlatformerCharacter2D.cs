@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PlatformerCharacter2D : MonoBehaviour {
 
@@ -31,7 +32,8 @@ public class PlatformerCharacter2D : MonoBehaviour {
 	public float speedIncrease;							// Amount by which max speed is increased every interval. 
 	float elapsedTime = 0f;								// Record of how much time passess between intervals then reset
 
-
+	public float invincibilityTime;
+	public bool invincible;
 	static int boosts;
 
     void Awake() {
@@ -47,6 +49,7 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		startPosition = transform.localPosition;
 		renderer.enabled = false;
 		rigidbody2D.isKinematic = true;
+		invincible = false;
 		enabled = false;
 	}
 
@@ -161,8 +164,6 @@ public class PlatformerCharacter2D : MonoBehaviour {
 	}
 
 	void GameStart (){
-		boosts = 0;
-		//GUIManager.SetBoosts (boosts);
 		distanceTraveled = 0f;
 		transform.localPosition = startPosition;
 		renderer.enabled = true;
@@ -184,5 +185,15 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		else{
 			maxSpeed = 10f;
 		}
+	}
+
+	public void BecomeInvincible (){
+		StartCoroutine (Invincible());
+	}
+
+	IEnumerator Invincible () {
+		invincible = true;
+		yield return new WaitForSeconds(invincibilityTime);
+		invincible = false;
 	}
 }

@@ -5,7 +5,6 @@ public class GUIManager : MonoBehaviour {
 
 	public Text gameOverText, instructionsText, runnerText, scoreText, boosts;
 
-
 	public static int score;
 
 	Animator anim;

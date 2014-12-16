@@ -3,13 +3,42 @@ using System.Collections;
 
 public class Booster : MonoBehaviour {
 
-	public Vector3 rotationVelocity;
-	public PlatformerCharacter2D player;
-	public float speedDecrease;
+	public enum BoosterBehaviors {								// List of different booster types
+		SpeedUp,
+		SpeedDown,
+		Invincibility
+	}
 
-	// Use this for initialization
+	public Vector3 rotationVelocity;							// Vector for rotation during runtime. 
+	public PlatformerCharacter2D player;						// Reference to the player. Needed to change maxSpeed on Player
+	public float speedDecrease = -5f;							// Value the slowing booster slows by
+	public float speedIncrease = 5f;							// Value the boosting booster increases by
+	public Material[] materials; 								// Material Array. Each booster type picks the relevant material
+
+	float speedChange;											// Actual variable used when changing speeds. Each booster type sets the value
+	int chooseBooster;											// Int to choose which behavior 
+
+	static int boosterBehaviorCount = 3;						// How many boosters behavior variations there are
+	public bool setInvincible;											// Keeps track if player is set invincible 
+
 	void Awake () {
 		player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlatformerCharacter2D>();
+	}
+
+	void Start () {
+		chooseBooster = Random.Range (0, boosterBehaviorCount);
+		if (chooseBooster == 0)
+		{
+			SpeedUp();
+		}
+		else if (chooseBooster == 1)
+		{
+			SpeedDown();
+		}
+		else if (chooseBooster == 2)
+		{
+			Invincibility();
+		}
 	}
 	
 	// Update is called once per frame
@@ -21,16 +50,29 @@ public class Booster : MonoBehaviour {
 		if (collider.gameObject.tag == "Player")
 		{
 			Debug.Log ("Player Hit Boost");
-			SpeedUp();
-			gameObject.SetActive (false);
+			player.SetMaxSpeed (speedChange);
+			if (setInvincible == true)
+			{
+				player.BecomeInvincible();
+			}
 		}
 	}
 
 	void SpeedUp (){
-		player.SetMaxSpeed (speedDecrease);
+		speedChange = speedIncrease;
+		renderer.material = materials[chooseBooster];
+		setInvincible = false;
 	}
 
 	void SpeedDown () {
+		speedChange = speedDecrease;
+		renderer.material = materials[chooseBooster];
+		setInvincible = false;
+	}
 
+	void Invincibility () {
+		speedChange = 0f;
+		renderer.material = materials[chooseBooster];
+		setInvincible = true;
 	}
 }

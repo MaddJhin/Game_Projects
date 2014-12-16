@@ -16,11 +16,17 @@ public class BarrierBehavior : MonoBehaviour {
 	public const int Count = 4;
 	public BehaviorOption behavior;
 	public Vector3 startingPos;
+
+	PlatformerCharacter2D player;
 	
 	float rotateSpeed;
 	float speed;
 	BehaviorDelegate behaviorDelegate;
-	
+
+	void Awake () {
+		player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlatformerCharacter2D>();
+	}
+
 	void Start () {
 		startingPos = GetComponent<Transform>().position;
 		Initialize ();
@@ -50,7 +56,7 @@ public class BarrierBehavior : MonoBehaviour {
 	}
 	
 	void OnTriggerEnter2D (Collider2D collider){
-		if (collider.gameObject.tag == "Player")
+		if (collider.gameObject.tag == "Player" && player.invincible == false)
 		{
 			GameEventManager.TriggerGameOver ();
 		}
