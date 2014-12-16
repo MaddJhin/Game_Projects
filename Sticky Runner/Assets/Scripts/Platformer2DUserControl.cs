@@ -4,14 +4,18 @@
 public class Platformer2DUserControl : MonoBehaviour 
 {
 	public float moveSpeed = 1f;
-
 	private PlatformerCharacter2D character;
     private bool jump;
 
 
-	void Awake()
-	{
+	void Awake(){
 		character = GetComponent<PlatformerCharacter2D>();
+	}
+
+	void Start (){
+		GameEventManager.GameStart += GameStart;
+		GameEventManager.GameOver += GameOver;
+		enabled = false;
 	}
 
     void Update ()
@@ -25,7 +29,8 @@ public class Platformer2DUserControl : MonoBehaviour
 		#else
 		if (Input.GetButtonDown("Jump"))
 		{
-			jump = true;
+			character.VerticalFlip();
+			GravityManager.InvertGravity ();
 		}
 		#endif
 
@@ -46,5 +51,13 @@ public class Platformer2DUserControl : MonoBehaviour
 
         // Reset the jump input once it has been used.
 	    jump = false;
+	}
+
+	void GameStart(){
+		enabled = true;
+	}
+
+	void GameOver (){
+		enabled = false;
 	}
 }

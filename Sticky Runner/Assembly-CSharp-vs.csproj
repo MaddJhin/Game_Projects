@@ -46,35 +46,30 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Imports\Fantasy Skybox FREE\Scripts\FSPlayer.cs" />
-     <Compile Include="Assets\Sample Assets\2D\Scripts\Camera2DFollow.cs" />
-     <Compile Include="Assets\Sample Assets\2D\Scripts\CameraFollow.cs" />
-     <Compile Include="Assets\Sample Assets\2D\Scripts\Restarter.cs" />
      <Compile Include="Assets\Scripts\BarrierBehavior.cs" />
      <Compile Include="Assets\Scripts\Booster.cs" />
      <Compile Include="Assets\Scripts\Booster2D.cs" />
+     <Compile Include="Assets\Scripts\CloudScripts\CloudFlow.cs" />
+     <Compile Include="Assets\Scripts\CloudScripts\PlayerFollower.cs" />
+     <Compile Include="Assets\Scripts\CloudScripts\SkyBG.cs" />
+     <Compile Include="Assets\Scripts\CoinTrigger.cs" />
+     <Compile Include="Assets\Scripts\Destroyer.cs" />
+     <Compile Include="Assets\Scripts\Managers\BarrierManager.cs" />
      <Compile Include="Assets\Scripts\Managers\CameraRunner.cs" />
+     <Compile Include="Assets\Scripts\Managers\CoinSpawner.cs" />
      <Compile Include="Assets\Scripts\Managers\GUIManager.cs" />
      <Compile Include="Assets\Scripts\Managers\GameEventManager.cs" />
-     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\GravityManager.cs" />
      <Compile Include="Assets\Scripts\Managers\GroundManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ParticleManager.cs" />
      <Compile Include="Assets\Scripts\Managers\PlatformManager.cs" />
-     <Compile Include="Assets\Scripts\Managers\SkylineManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\Restarter.cs" />
+     <Compile Include="Assets\Scripts\PlatformCollision.cs" />
      <Compile Include="Assets\Scripts\Platformer2DUserControl.cs" />
      <Compile Include="Assets\Scripts\PlatformerCharacter2D.cs" />
-     <Compile Include="Assets\Scripts\Runner.cs" />
-     <None Include="Assets\Imports\Fantasy Skybox FREE\Readme\Readme.txt" />
- <Reference Include="Assembly-UnityScript-firstpass">
- <HintPath>D:/Users/Francisco/Unity Projects/Game Projects/Sticky Runner/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
- </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">
-      <Project>{6380CB67-3F2A-9613-2000-F313A6A5DAFD}</Project>      <Name>Assembly-CSharp-firstpass-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

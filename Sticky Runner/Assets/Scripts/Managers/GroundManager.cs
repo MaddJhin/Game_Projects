@@ -15,6 +15,7 @@ public class GroundManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		GameEventManager.GameStart += GameStart;
 		groundQueue = new Queue<GameObject>(numberOfObjects);
 		for (int i = 0; i < numberOfObjects; i++) 
 		{
@@ -42,4 +43,11 @@ public class GroundManager : MonoBehaviour {
 		groundQueue.Enqueue (obj);
 	}
 
+	void GameStart (){
+		nextPosition = startPosition;
+		for (int i = 0; i < numberOfObjects; i++) 
+		{
+			Recycle ();
+		}
+	}
 }

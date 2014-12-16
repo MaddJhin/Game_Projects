@@ -2,7 +2,7 @@
 
 public class PlatformerCharacter2D : MonoBehaviour {
 
-	public static float distanceTraveled;						// For determining how far the player has moved. 
+	public static float distanceTraveled;				// For determining how far the player has moved. 
 
 	bool facingRight = true;							// For determining which way the player is currently facing.
 	bool normalGravity = true;							// 
@@ -13,7 +13,7 @@ public class PlatformerCharacter2D : MonoBehaviour {
 	[Range(0, 1)]
 	[SerializeField] float crouchSpeed = .36f;			// Amount of maxSpeed applied to crouching movement. 1 = 100%
 	
-	[SerializeField] bool airControl = false;			// Whether or not a player can steer while jumping;
+	[SerializeField] bool airControl = false;			// Whether or not a player can steer whiSle jumping;
 	[SerializeField] LayerMask whatIsGround;			// A mask determining what is ground to the character
 	
 	Transform groundCheck;								// A position marking where to check if the player is grounded.
@@ -22,11 +22,15 @@ public class PlatformerCharacter2D : MonoBehaviour {
 	Transform ceilingCheck;								// A position marking where to check for ceilings
 	float ceilingRadius = .01f;							// Radius of the overlap circle to determine if the player can stand up
 	Animator anim;										// Reference to the player's animator component.
-	bool hitCeiling;									// Verify if the player hit a ceiling
 
 	bool doubleJump = false;							// Bool to veryfy if double jump has been used. 
-	Collider2D boxCollider;
-	Collider2D circleCollier;
+	Vector2 startPosition;								// Start position set initially then used to reposition player on Game Restart
+
+	//Gradual Speedup Variables
+	public float speedUpInterval;						// Interval between each speedup
+	public float speedIncrease;							// Amount by which max speed is increased every interval. 
+	float elapsedTime = 0f;								// Record of how much time passess between intervals then reset
+
 
 	static int boosts;
 
@@ -35,20 +39,32 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		groundCheck = transform.Find("GroundCheck");
 		ceilingCheck = transform.Find("CeilingCheck");
 		anim = GetComponent<Animator>();
-		boxCollider = GetComponent<BoxCollider2D>();
-		circleCollier = GetComponent<CircleCollider2D>();
+	}
+
+	void Start () {
+		GameEventManager.GameStart += GameStart;
+		GameEventManager.GameOver += GameOver;
+		startPosition = transform.localPosition;
+		renderer.enabled = false;
+		rigidbody2D.isKinematic = true;
+		enabled = false;
 	}
 
 	void Update () {
 		distanceTraveled = transform.localPosition.x;
+
+		elapsedTime += Time.deltaTime;
+		if (elapsedTime >= speedUpInterval)
+		{
+			maxSpeed += speedIncrease;
+			elapsedTime = 0;
+		}
 	}
 
 	void FixedUpdate() {
 		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
 		grounded = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsGround);
 		anim.SetBool("Ground", grounded);
-
-		hitCeiling = Physics2D.OverlapCircle(ceilingCheck.position, groundedRadius, whatIsGround);
 
 		// Set the vertical animation
 		anim.SetFloat("vSpeed", rigidbody2D.velocity.y);
@@ -82,7 +98,7 @@ public class PlatformerCharacter2D : MonoBehaviour {
 			anim.SetFloat("Speed", Mathf.Abs(move));
 
 			// Move the character
-			rigidbody2D.velocity = new Vector2(move * maxSpeed, rigidbody2D.velocity.y);
+			rigidbody2D.velocity = new Vector2 (move * maxSpeed, rigidbody2D.velocity.y);
 			
 			// If the input is moving the player right and the player is facing left...
 			if(move > 0 && !facingRight)
@@ -108,11 +124,6 @@ public class PlatformerCharacter2D : MonoBehaviour {
 				doubleJump = true;
 			}
         }
-
-		if (hitCeiling)
-		{
-			VerticalFlip();
-		}
 	}
 
 	
@@ -126,7 +137,7 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		transform.localScale = theScale;
 	}
 
-	void VerticalFlip (){
+	public void VerticalFlip (){
 		// Switch the way the player is labelled as facing.
 		normalGravity = !normalGravity;
 		
@@ -134,21 +145,44 @@ public class PlatformerCharacter2D : MonoBehaviour {
 		Vector3 theScale = transform.localScale;
 		theScale.y *= -1;
 		transform.localScale = theScale;
-		GameManager.InvertGravity ();
 		jumpForce = jumpForce * -1;
 		Debug.Log ("Switched Gravity");
 	}
 
 	public static void AddBoost() {
 		boosts += 1;
+		//GUIManager.SetBoosts (boosts);
 	}
 
-//	void OnCollisionEnter2D (Collision2D other) {
-//
-//		if (other.gameObject.tag == "Platform" )
-//		{
-//			Physics2D.IgnoreCollision (other.collider, boxCollider);
-//			Physics2D.IgnoreCollision (other.collider, circleCollier);
-//		}
-//	}
+	void GameOver (){
+		renderer.enabled = false;
+		rigidbody2D.isKinematic = true;
+		enabled = false;
+	}
+
+	void GameStart (){
+		boosts = 0;
+		//GUIManager.SetBoosts (boosts);
+		distanceTraveled = 0f;
+		transform.localPosition = startPosition;
+		renderer.enabled = true;
+		rigidbody2D.isKinematic = false;
+		if (!normalGravity)
+		{
+			VerticalFlip ();
+		}
+		elapsedTime = 0;
+		maxSpeed = 10f;
+		enabled = true;
+	}
+
+	public void SetMaxSpeed (float speed){
+		if (maxSpeed + speed >= 10f)
+		{
+			maxSpeed += speed;
+		}
+		else{
+			maxSpeed = 10f;
+		}
+	}
 }
