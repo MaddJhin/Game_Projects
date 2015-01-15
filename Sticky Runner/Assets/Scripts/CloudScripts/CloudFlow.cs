@@ -55,6 +55,9 @@ public class CloudFlow : MonoBehaviour
 	public Camera m_Camera = null;					// Handle Orthographic Camera in the scene
 	public bool moveLeft;
 
+	public PlatformerCharacter2D player;			// Player for cloud speed purposes 
+	float cloudStartingSpeed;
+
 	Vector3 LeftMostOfScreen;						// Vector3 of middle-left most position at the edge of the camera view
 	Vector3 RightMostOfScreen;						// Vector3 of middle-right most position at the edge of the camera view
 
@@ -69,6 +72,9 @@ public class CloudFlow : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
+		player = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlatformerCharacter2D>();
+		cloudStartingSpeed = Random.Range (m_MinSpeed, m_MaxSpeed);
+
 		// init m_CloudList
 		m_CloudList = new Cloud[transform.childCount];
 
@@ -89,7 +95,7 @@ public class CloudFlow : MonoBehaviour
 			m_CloudList[index] = new Cloud();
 
 			// Random speed
-			m_CloudList[index].m_MoveSpeed = Random.Range(m_MinSpeed,m_MaxSpeed);
+			m_CloudList[index].m_MoveSpeed = cloudStartingSpeed;
 
 			// Left/right direction
 			if(RandomDirection==0)
@@ -153,7 +159,6 @@ public class CloudFlow : MonoBehaviour
 			// Update nothing
 			return;
 		}
-
 
 		// Update all children cloud
 		int index = 0;
@@ -237,10 +242,11 @@ public class CloudFlow : MonoBehaviour
 
 			}
 
-
+			m_CloudList[index].m_MoveSpeed = cloudStartingSpeed - player.maxSpeed;
 
 			index++;
 		}
+
 	}
 	
 	#endregion {Monobehavior}

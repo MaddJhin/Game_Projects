@@ -3,51 +3,78 @@ using UnityEngine.UI;
 
 public class GUIManager : MonoBehaviour {
 
-	public Text gameOverText, instructionsText, runnerText, scoreText, boosts;
+	public Text gameOverText, instructionsText, runnerText, scoreText, boostGainNotice, pauseText;
 
 	public static int score;
 
+	private static GUIManager instance;
 	Animator anim;
+	Animator boosterAnim;
+	bool gamePaused = false;
+
 
 	void Awake (){
+		instance = this;
 		anim = GetComponent<Animator>();
+		boosterAnim = boostGainNotice.GetComponent<Animator>();
 	}
 
-	void Update () {
-		scoreText.text = "Score: " + Mathf.Round(PlatformerCharacter2D.distanceTraveled + score);
-	}
-
-	// Use this for initialization
 	void Start () {
-//		instance = this;
 		GameEventManager.GameStart += GameStart;
 		GameEventManager.GameOver += GameOver;
 		gameOverText.enabled = false;	
 		scoreText.text = "";
-		boosts.text = "";
+		boostGainNotice.text = "";
+		boostGainNotice.enabled = true;
+		pauseText.enabled = false;
+	}
+
+	void Update () {
+		scoreText.text = "Score: " + Mathf.Round(PlatformerCharacter2D.distanceTraveled + score);
+
+		if (Input.GetKeyDown (KeyCode.Escape) && !gamePaused)
+		{
+			PauseGame();
+		}
+		else if (Input.GetKeyDown (KeyCode.Escape) && gamePaused)
+		{
+			ResumeGame();
+		}
 	}
 
 	void GameStart(){
 		gameOverText.enabled = false;
 		instructionsText.enabled = false;
 		runnerText.enabled = false;
+		boostGainNotice.enabled = true;
 		scoreText.enabled = true;
+		score = 0;
 		anim.SetTrigger ("GameStart");
-//		enabled = false;
+		anim.ResetTrigger ("GameOver");
 	}
 
 	void GameOver(){
 		gameOverText.enabled = true;
 		instructionsText.enabled = true;
+		boostGainNotice.text = "";
 		anim.SetTrigger ("GameOver");
-//		enabled = true;
+		boosterAnim.ResetTrigger ("BoosterGain");
 	}
 
-//	public static void SetDistanceTraveled(float distance){
-//		instance.scoreText.text = "Distance: " + distance.ToString("f0");
-//	}
+	void PauseGame() {
+		Time.timeScale = 0;
+		pauseText.enabled = true;
+		gamePaused = true;
+	}
 
-//	public static void SetBoosts(int boost){
-//		instance.boosts.text = "Boosts: " + boost.ToString();
-//	}
+	void ResumeGame() {
+		Time.timeScale = 1;
+		pauseText.enabled = false;
+		gamePaused = false;
+	}
+
+	public static void BoostNotice(string boost){
+		instance.boostGainNotice.text = boost;
+		instance.boosterAnim.Play ("BoostGain 0");
+	}
 }
